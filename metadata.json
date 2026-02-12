@@ -1,0 +1,5 @@
+{
+  "name": "UltraPDF Squeezer",
+  "description": "A high-performance, browser-based PDF compressor that allows fine-tuning of image quality and resolution to achieve the perfect balance between file size and clarity.",
+  "requestFramePermissions": []
+}
