@@ -41,8 +41,8 @@ export const DropZone: React.FC<DropZoneProps> = ({ onFileSelect }) => {
       onDragLeave={handleDrag}
       onDrop={handleDrop}
       className={`relative group h-64 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer
-        ${isDragging 
-          ? 'border-indigo-500 bg-indigo-50 scale-[1.01]' 
+        ${isDragging
+          ? 'border-indigo-500 bg-indigo-50 scale-[1.01]'
           : 'border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-slate-300'}`}
     >
       <input
@@ -58,7 +58,7 @@ export const DropZone: React.FC<DropZoneProps> = ({ onFileSelect }) => {
       <p className="text-slate-400 text-sm mt-1">或者 点击此处浏览文件</p>
       <div className="mt-4 flex gap-2">
         <span className="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs text-slate-500">仅限 PDF</span>
-        <span className="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs text-slate-500">最大 100MB</span>
+        <span className="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs text-slate-500">最大 500MB</span>
       </div>
     </div>
   );

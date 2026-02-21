@@ -20,20 +20,20 @@ const App: React.FC = () => {
   // 估算逻辑：根据质量和缩放比例计算一个预期的压缩比
   const estimation = useMemo(() => {
     if (!file) return null;
-    
+
     // 基础比率：假设 re-encoding 通常能减小到 60% (针对未压缩过的图片)
     const baseRatio = 0.6;
     // 缩放影响是平方级的 (像素面积)
     const scaleFactor = Math.pow(settings.scale / 2.0, 2);
     // 质量影响是非线性的
     const qualityFactor = Math.pow(settings.quality / 100, 0.7);
-    
+
     const ratio = baseRatio * scaleFactor * qualityFactor;
-    
+
     // 给出一个范围，因为 PDF 内容差异很大
     const min = file.size * ratio * 0.7;
     const max = file.size * ratio * 1.3;
-    
+
     return {
       min: Math.min(min, file.size * 0.9), // 不超过原大小的90%
       max: Math.min(max, file.size * 1.1),
@@ -51,7 +51,14 @@ const App: React.FC = () => {
     setLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${msg}`]);
   };
 
+  const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
+
   const handleFileSelect = (selectedFile: File) => {
+    if (selectedFile.size > MAX_FILE_SIZE) {
+      setErrorMessage(`文件过大：${formatSize(selectedFile.size)}，最大支持 500MB`);
+      setState(AppState.ERROR);
+      return;
+    }
     setFile(selectedFile);
     setResult(null);
     setState(AppState.IDLE);
@@ -66,10 +73,10 @@ const App: React.FC = () => {
       setState(AppState.PROCESSING);
       setLogs([]);
       setProgress(0);
-      
+
       const compressedData = await compressPDF(
-        file, 
-        settings, 
+        file,
+        settings,
         (p, log) => {
           setProgress(p);
           if (log) addLog(log);
@@ -77,7 +84,7 @@ const App: React.FC = () => {
       );
 
       const url = URL.createObjectURL(new Blob([compressedData], { type: 'application/pdf' }));
-      
+
       const res: ProcessingResult = {
         url,
         originalSize: file.size,
@@ -115,14 +122,14 @@ const App: React.FC = () => {
     <div className="min-h-screen flex flex-col">
       <header className="gradient-bg text-white py-10 px-4 shadow-lg text-center">
         <h1 className="text-3xl md:text-5xl font-extrabold mb-3 tracking-tight flex items-center justify-center gap-3">
-           UltraPDF Squeezer
+          UltraPDF Squeezer
         </h1>
         <p className="text-indigo-100 font-medium">100% 浏览器本地处理 · 保护隐私 · 极致压缩</p>
       </header>
 
       <main className="flex-grow max-w-6xl mx-auto w-full px-4 -mt-6 mb-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          
+
           {/* Settings & Upload Area */}
           <div className="lg:col-span-8 space-y-6">
             <div className="bg-white rounded-3xl shadow-xl p-6 border border-slate-100">
@@ -130,7 +137,7 @@ const App: React.FC = () => {
                 <Upload className="w-5 h-5 text-indigo-600" />
                 <h2 className="text-lg font-bold text-slate-800">1. 选择 PDF 文件</h2>
               </div>
-              
+
               {!file ? (
                 <DropZone onFileSelect={handleFileSelect} />
               ) : (
@@ -181,10 +188,10 @@ const App: React.FC = () => {
                 <h2 className="text-lg font-bold text-slate-800">2. 参数微调</h2>
               </div>
 
-              <SettingsPanel 
-                settings={settings} 
-                onChange={setSettings} 
-                disabled={state === AppState.PROCESSING} 
+              <SettingsPanel
+                settings={settings}
+                onChange={setSettings}
+                disabled={state === AppState.PROCESSING}
               />
 
               {/* Estimation Badge */}
@@ -214,8 +221,8 @@ const App: React.FC = () => {
                 disabled={!file || state === AppState.PROCESSING}
                 onClick={startCompression}
                 className={`w-full mt-6 py-5 rounded-2xl font-bold text-white shadow-xl transition-all transform active:scale-95 flex items-center justify-center gap-3 text-lg
-                  ${!file || state === AppState.PROCESSING 
-                    ? 'bg-slate-300 cursor-not-allowed shadow-none' 
+                  ${!file || state === AppState.PROCESSING
+                    ? 'bg-slate-300 cursor-not-allowed shadow-none'
                     : 'bg-indigo-600 hover:bg-indigo-700 hover:shadow-indigo-300'}`}
               >
                 {state === AppState.PROCESSING ? (
